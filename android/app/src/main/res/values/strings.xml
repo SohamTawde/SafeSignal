@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">SafeSignal</string>
+    <string name="title_activity_main">SafeSignal</string>
+    <string name="package_name">org.safesignal.app</string>
+    <string name="custom_url_scheme">org.safesignal.app</string>
+</resources>
