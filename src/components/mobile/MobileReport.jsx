@@ -95,12 +95,13 @@ export const MobileReport = ({ onNavigateMap, initialZone = 'Zone 14' }) => {
     setErrorMessage('');
 
     try {
+      const lat = userLoc?.lat || DEFAULT_PILOT_LOCATION.lat;
+      const lng = userLoc?.lng || DEFAULT_PILOT_LOCATION.lng;
+
       const res = await submitSignal({
         category: selectedCategory,
-        latitude: userLoc?.lat || DEFAULT_PILOT_LOCATION.lat,
-        longitude: userLoc?.lng || DEFAULT_PILOT_LOCATION.lng,
         grid_zone: currentZone,
-      });
+      }, lat, lng);
 
       setIsQueuedOffline(Boolean(res?.queued));
       setSubmitted(true);
@@ -199,11 +200,8 @@ export const MobileReport = ({ onNavigateMap, initialZone = 'Zone 14' }) => {
     <div className={`w-full h-full flex flex-col justify-between px-4 pt-1 pb-1 select-none overflow-y-auto no-scrollbar transition-colors ${
       isDark ? 'bg-[#0b0710] text-white' : 'bg-[#f2f4f8] text-slate-900'
     }`}>
-      {/* Centered Header matching Home design 1-to-1 */}
-      <div className="text-center mb-1.5">
-        <h1 className={`text-xl font-black tracking-tight ${isDark ? 'text-white' : 'text-[#111827]'}`}>
-          Anonymous Report
-        </h1>
+      {/* Subtitle guidance */}
+      <div className="text-center mb-2">
         <p className={`text-[11px] font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
           Select incident type to warn nearby citizens in real-time
         </p>

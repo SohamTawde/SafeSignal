@@ -44,7 +44,11 @@ const AuthorityOverview = () => {
       })
       .subscribe();
 
+    // Polling fallback to guarantee updates even if realtime websocket disconnects
+    const pollInterval = setInterval(fetchStats, 4000);
+
     return () => {
+      clearInterval(pollInterval);
       signalSub.unsubscribe();
       patternSub.unsubscribe();
     };

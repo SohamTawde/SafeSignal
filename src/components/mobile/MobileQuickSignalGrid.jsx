@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Loader2, CheckCircle2 } from 'lucide-react';
 import { useMobileTheme } from '../../contexts/MobileThemeContext';
 import { submitSignal } from '../../services/api';
-import { DEFAULT_PILOT_LOCATION } from '../../config/geoConfig';
+import { DEFAULT_PILOT_LOCATION, calculateGridZone } from '../../config/geoConfig';
 
 // Custom SVGs matching the user's mockup 1-to-1
 const FollowingIcon = () => (
@@ -72,12 +72,15 @@ export const MobileQuickSignalGrid = () => {
     setSubmitting(category.id);
 
     try {
+      const { gridZone, approxLat, approxLng } = calculateGridZone(
+        DEFAULT_PILOT_LOCATION.lat,
+        DEFAULT_PILOT_LOCATION.lng
+      );
+
       await submitSignal({
         category: category.id,
-        latitude: DEFAULT_PILOT_LOCATION.lat,
-        longitude: DEFAULT_PILOT_LOCATION.lng,
-        grid_zone: 'Zone 14',
-      });
+        grid_zone: gridZone || 'ZONE-A-014',
+      }, approxLat, approxLng);
 
       setToastMessage(`✓ Anonymous "${category.id}" signal recorded`);
       setTimeout(() => setToastMessage(''), 3000);

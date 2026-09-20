@@ -3,7 +3,33 @@ import { useNavigate } from 'react-router-dom';
 import { GlassCard } from '../../components/GlassCard';
 import { getPatterns } from '../../services/api';
 import { supabase } from '../../lib/supabase';
-import { ShieldAlert, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
+import { ShieldAlert, AlertCircle, CheckCircle, XCircle, Clock } from 'lucide-react';
+
+const formatReportedTime = (timestamp) => {
+  if (!timestamp) return { primary: 'Recent', relative: 'Just now' };
+  const date = new Date(timestamp);
+  if (isNaN(date.getTime())) return { primary: 'Recent', relative: 'Just now' };
+
+  const now = new Date();
+  const diffMs = Math.max(0, now - date);
+  const diffMinutes = Math.floor(diffMs / (1000 * 60));
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  let relative = 'Just now';
+  if (diffMinutes >= 1 && diffMinutes < 60) relative = `${diffMinutes}m ago`;
+  else if (diffHours >= 1 && diffHours < 24) relative = `${diffHours}h ago`;
+  else if (diffDays === 1) relative = 'Yesterday';
+  else if (diffDays > 1) relative = `${diffDays}d ago`;
+
+  const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const dateStr = date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+
+  return {
+    primary: `${dateStr}, ${timeStr}`,
+    relative
+  };
+};
 
 const EmergingPatterns = () => {
   const navigate = useNavigate();
@@ -28,7 +54,11 @@ const EmergingPatterns = () => {
       })
       .subscribe();
 
+    // Polling fallback to guarantee updates even if realtime websocket disconnects
+    const pollInterval = setInterval(fetchPatterns, 4000);
+
     return () => {
+      clearInterval(pollInterval);
       subscription.unsubscribe();
     };
   }, []);
@@ -67,11 +97,12 @@ const EmergingPatterns = () => {
 
       <GlassCard className="p-0 overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-[800px]">
+          <table className="w-full text-left border-collapse min-w-[900px]">
             <thead>
               <tr className="bg-black/20 border-b border-white/5">
                 <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Pattern ID</th>
                 <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Location Zone</th>
+                <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Reported Time</th>
                 <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Signals</th>
                 <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Time Span</th>
                 <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Trust Score</th>
@@ -87,12 +118,27 @@ const EmergingPatterns = () => {
                 const timeSpan = hours > 24 ? `${Math.round(hours/24)} days` : `${hours} hours`;
                 
                 // Truncate ID for display
-                const shortId = p.id.substring(0, 8);
+                const shortId = p.id ? p.id.substring(0, 8) : 'N/A';
+
+                // Incident reported time
+                const reportedAt = p.end_time || p.updated_at || p.created_at;
+                const formattedTime = formatReportedTime(reportedAt);
 
                 return (
                   <tr key={p.id} className="hover:bg-white/[0.02] transition-colors group">
                     <td className="px-6 py-4 text-xs font-bold text-slate-300 uppercase tracking-wider">{shortId}</td>
                     <td className="px-6 py-4 text-sm font-bold text-white uppercase tracking-tight">{p.grid_zone}</td>
+                    <td className="px-6 py-4">
+                      <div className="flex flex-col">
+                        <span className="text-xs font-bold text-slate-200 tracking-tight flex items-center gap-1.5">
+                          <Clock size={12} className="text-violet-400 shrink-0" />
+                          {formattedTime.primary}
+                        </span>
+                        <span className="text-[10px] font-semibold text-slate-400 pl-4.5">
+                          {formattedTime.relative}
+                        </span>
+                      </div>
+                    </td>
                     <td className="px-6 py-4 text-xs font-bold text-slate-300">{p.report_count}</td>
                     <td className="px-6 py-4 text-xs font-bold text-slate-400">{timeSpan}</td>
                     <td className="px-6 py-4">
@@ -124,7 +170,7 @@ const EmergingPatterns = () => {
               })}
               {patterns.length === 0 && (
                 <tr>
-                  <td colSpan="7" className="px-6 py-8 text-center text-slate-500 text-sm">
+                  <td colSpan="8" className="px-6 py-8 text-center text-slate-500 text-sm">
                     No emerging patterns detected.
                   </td>
                 </tr>

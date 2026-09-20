@@ -96,21 +96,35 @@ const notifyListeners = () => {
 };
 
 /**
+ * Sanitizes any signal payload so only valid database columns are sent to Supabase.
+ * Strictly avoids PII (no exact lat/lng) and rejects unknown columns.
+ */
+export const sanitizeSignalForDb = (signal) => {
+  if (!signal) return null;
+  return {
+    grid_zone: signal.grid_zone || 'ZONE-A-014',
+    category: normalizeCategory(signal.category),
+    reported_at: signal.reported_at || new Date().toISOString(),
+    status: signal.status || 'pending',
+    anonymous_reporter_hash: signal.anonymous_reporter_hash || null
+  };
+};
+
+/**
  * Enqueue a signal for offline processing
  */
 export const enqueueSignal = (signalData, approxLat, approxLng) => {
   const currentQueue = getQueue();
-  const normalizedCategory = normalizeCategory(signalData.category);
+  const cleanSignal = sanitizeSignalForDb(signalData);
+
+  const effectiveLat = approxLat ?? signalData?.latitude ?? signalData?.approxLat;
+  const effectiveLng = approxLng ?? signalData?.longitude ?? signalData?.approxLng;
 
   const queuedItem = {
     id: `queue_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
-    signalData: {
-      ...signalData,
-      category: normalizedCategory,
-      reported_at: signalData.reported_at || new Date().toISOString()
-    },
-    approxLat,
-    approxLng,
+    signalData: cleanSignal,
+    approxLat: effectiveLat,
+    approxLng: effectiveLng,
     enqueuedAt: new Date().toISOString(),
     retryCount: 0
   };
@@ -145,21 +159,29 @@ export const processQueue = async () => {
 
   for (const item of queue) {
     try {
+      const cleanDbSignal = sanitizeSignalForDb(item.signalData);
+      const effectiveLat = item.approxLat ?? item.signalData?.latitude;
+      const effectiveLng = item.approxLng ?? item.signalData?.longitude;
+
       if (isUsingMock()) {
-        await mockApi.submitSignal(item.signalData, item.approxLat, item.approxLng);
+        await mockApi.submitSignal(cleanDbSignal, effectiveLat, effectiveLng);
         processedCount++;
       } else {
         const { error } = await supabase
           .from('safety_signals')
-          .insert([item.signalData]);
+          .insert([cleanDbSignal]);
 
         if (error) {
           throw error;
         }
 
-        // Trigger client-side pattern evaluation for synced zone
-        if (item.signalData?.grid_zone) {
-          evaluateGridZone(item.signalData.grid_zone, item.approxLat, item.approxLng).catch(() => {});
+        // Trigger pattern evaluation for synced zone so Authority Dashboard receives it
+        if (cleanDbSignal?.grid_zone) {
+          try {
+            await evaluateGridZone(cleanDbSignal.grid_zone, effectiveLat, effectiveLng, cleanDbSignal);
+          } catch (peErr) {
+            console.warn('Pattern evaluation error during sync:', peErr);
+          }
         }
 
         processedCount++;
