@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { 
-  CheckCircle2, MapPin, Loader2, ArrowRight, ShieldCheck, ShieldAlert 
+  CheckCircle2, MapPin, Loader2, ArrowRight, ShieldCheck, ShieldAlert, CloudOff, Zap 
 } from 'lucide-react';
 import { useMobileTheme } from '../../contexts/MobileThemeContext';
 import { submitSignal } from '../../services/api';
@@ -80,6 +80,7 @@ export const MobileReport = ({ onNavigateMap, initialZone = 'Zone 14' }) => {
   const [userLoc, setUserLoc] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [isQueuedOffline, setIsQueuedOffline] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
   const currentZone = userLoc ? calculateGridZone(userLoc.lat, userLoc.lng).gridZone : initialZone;
@@ -94,16 +95,18 @@ export const MobileReport = ({ onNavigateMap, initialZone = 'Zone 14' }) => {
     setErrorMessage('');
 
     try {
-      await submitSignal({
+      const res = await submitSignal({
         category: selectedCategory,
         latitude: userLoc?.lat || DEFAULT_PILOT_LOCATION.lat,
         longitude: userLoc?.lng || DEFAULT_PILOT_LOCATION.lng,
         grid_zone: currentZone,
       });
 
+      setIsQueuedOffline(Boolean(res?.queued));
       setSubmitted(true);
     } catch (err) {
       console.warn('Fallback submit signal:', err);
+      setIsQueuedOffline(true);
       setSubmitted(true);
     } finally {
       setSubmitting(false);
@@ -113,6 +116,7 @@ export const MobileReport = ({ onNavigateMap, initialZone = 'Zone 14' }) => {
   const handleReset = () => {
     setSelectedCategory(null);
     setSelectedTimeframe('just_now');
+    setIsQueuedOffline(false);
     setSubmitted(false);
   };
 
@@ -121,20 +125,47 @@ export const MobileReport = ({ onNavigateMap, initialZone = 'Zone 14' }) => {
       <div className={`w-full h-full flex flex-col items-center justify-center p-6 text-center select-none animate-in zoom-in-95 duration-200 ${
         isDark ? 'bg-[#0b0710] text-white' : 'bg-[#f2f4f8] text-slate-900'
       }`}>
-        <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-4 shadow-xl ${
-          isDark 
-            ? 'bg-emerald-950/60 border-2 border-emerald-500/60 text-emerald-400 shadow-emerald-500/20' 
-            : 'bg-emerald-100 border-2 border-emerald-500 text-emerald-600 shadow-emerald-200'
-        }`}>
-          <CheckCircle2 size={36} className="animate-in zoom-in-50 duration-300" />
-        </div>
+        {isQueuedOffline ? (
+          <>
+            <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-4 shadow-xl ${
+              isDark 
+                ? 'bg-amber-950/60 border-2 border-amber-500/60 text-amber-400 shadow-amber-500/20' 
+                : 'bg-amber-100 border-2 border-amber-500 text-amber-600 shadow-amber-200'
+            }`}>
+              <CloudOff size={32} className="animate-in zoom-in-50 duration-300" />
+            </div>
 
-        <h3 className="text-xl font-black tracking-tight mb-1">
-          Signal Anonymously Transmitted
-        </h3>
-        <p className={`text-xs max-w-xs mb-6 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-          Your report has been hashed and obfuscated into <strong className={isDark ? 'text-violet-400' : 'text-violet-700'}>{currentZone}</strong>. Zero identifying data was collected.
-        </p>
+            <h3 className="text-xl font-black tracking-tight mb-1">
+              Signal Saved Offline
+            </h3>
+            <p className={`text-xs max-w-xs mb-3 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+              Device is currently offline. Your report has been safely hashed into <strong className={isDark ? 'text-amber-400' : 'text-amber-700'}>{currentZone}</strong> and stored in local vault.
+            </p>
+            <div className={`px-3 py-1.5 rounded-full mb-6 text-[10px] font-bold flex items-center gap-1.5 ${
+              isDark ? 'bg-amber-500/10 text-amber-300 border border-amber-500/20' : 'bg-amber-50 text-amber-800 border border-amber-200'
+            }`}>
+              <Zap size={12} className="text-amber-500 animate-pulse" />
+              <span>Will automatically sync when online</span>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-4 shadow-xl ${
+              isDark 
+                ? 'bg-emerald-950/60 border-2 border-emerald-500/60 text-emerald-400 shadow-emerald-500/20' 
+                : 'bg-emerald-100 border-2 border-emerald-500 text-emerald-600 shadow-emerald-200'
+            }`}>
+              <CheckCircle2 size={36} className="animate-in zoom-in-50 duration-300" />
+            </div>
+
+            <h3 className="text-xl font-black tracking-tight mb-1">
+              Signal Anonymously Transmitted
+            </h3>
+            <p className={`text-xs max-w-xs mb-6 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+              Your report has been hashed and obfuscated into <strong className={isDark ? 'text-violet-400' : 'text-violet-700'}>{currentZone}</strong>. Zero identifying data was collected.
+            </p>
+          </>
+        )}
 
         <div className="w-full max-w-xs space-y-2.5">
           <button

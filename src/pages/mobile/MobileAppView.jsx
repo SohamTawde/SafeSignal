@@ -8,13 +8,15 @@ import { MobileBottomNavbar } from '../../components/mobile/MobileBottomNavbar';
 import { MobileRadarMap } from '../../components/mobile/MobileRadarMap';
 import { MobileReport } from '../../components/mobile/MobileReport';
 import { MobileSOS } from '../../components/mobile/MobileSOS';
-import { ShieldAlert, Moon, Sun, Shield, Lock, Phone, Info, Bell } from 'lucide-react';
+import { ShieldAlert, Moon, Sun, Shield, Lock, Phone, Info, Bell, Cloud, CloudOff, RefreshCw } from 'lucide-react';
+import { useSyncStatus } from '../../hooks/useSyncStatus';
 import { Capacitor } from '@capacitor/core';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { App as CapApp } from '@capacitor/app';
 
 export const MobileAppView = () => {
   const { isDark, toggleTheme } = useMobileTheme();
+  const { isOnline, isSyncing, pendingCount, lastSyncedAt, syncNow } = useSyncStatus();
   const [activeTab, setActiveTab] = useState('home');
   const isNative = typeof window !== 'undefined' && Capacitor.isNativePlatform();
   const mainRef = useRef(null);
@@ -129,6 +131,69 @@ export const MobileAppView = () => {
                 >
                   Switch to {isDark ? 'Bright' : 'Dark'}
                 </button>
+              </div>
+            </div>
+
+            {/* Offline Sync & Vault Diagnostics Card */}
+            <div className={`p-4 rounded-2xl border ${
+              isDark ? 'bg-[#150f24] border-white/10' : 'bg-white border-slate-200 shadow-sm'
+            }`}>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-3">
+                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
+                    !isOnline 
+                      ? 'bg-amber-950 text-amber-400' 
+                      : pendingCount > 0 
+                        ? 'bg-blue-950 text-blue-400' 
+                        : 'bg-emerald-950 text-emerald-400'
+                  }`}>
+                    {!isOnline ? <CloudOff size={18} /> : isSyncing ? <RefreshCw size={18} className="animate-spin" /> : <Cloud size={18} />}
+                  </div>
+                  <div>
+                    <span className="text-sm font-bold block">Offline Queue & Sync</span>
+                    <span className="text-xs text-slate-400">
+                      Status: {isSyncing ? 'Syncing...' : isOnline ? 'Online & Ready' : 'Offline Mode'}
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  onClick={syncNow}
+                  disabled={isSyncing}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all ${
+                    isSyncing
+                      ? 'bg-violet-600/50 text-white/50 cursor-not-allowed'
+                      : pendingCount > 0
+                        ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-md'
+                        : isDark
+                          ? 'bg-white/10 hover:bg-white/15 text-slate-300'
+                          : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                  }`}
+                >
+                  <RefreshCw size={12} className={isSyncing ? 'animate-spin' : ''} />
+                  <span>{isSyncing ? 'Syncing' : pendingCount > 0 ? `Sync (${pendingCount})` : 'Sync Now'}</span>
+                </button>
+              </div>
+
+              <div className="space-y-1.5 pt-2 border-t border-black/5 dark:border-white/5 text-xs">
+                <div className="flex justify-between items-center text-slate-400">
+                  <span>Queued Offline Reports:</span>
+                  <span className={`font-bold font-mono ${pendingCount > 0 ? 'text-amber-400' : 'text-emerald-400'}`}>
+                    {pendingCount} item{pendingCount === 1 ? '' : 's'}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center text-slate-400">
+                  <span>Auto-Sync Background Trigger:</span>
+                  <span className="font-semibold text-violet-400">Active</span>
+                </div>
+                {lastSyncedAt && (
+                  <div className="flex justify-between items-center text-slate-400">
+                    <span>Last Cloud Sync:</span>
+                    <span className="font-mono text-[11px] text-slate-300">
+                      {new Date(lastSyncedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
 

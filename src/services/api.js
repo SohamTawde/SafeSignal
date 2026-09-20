@@ -1,6 +1,7 @@
 import { supabase } from '../lib/supabase';
 import { evaluateGridZone } from './patternEngine';
 import * as mockApi from './mockApi';
+import { enqueueSignal, normalizeCategory } from './syncManager';
 
 // Determine if mock mode is explicitly forced or if Supabase URL is placeholder
 const isMockForced = import.meta.env.VITE_USE_MOCK_DATA === 'true';
@@ -10,29 +11,54 @@ const isPlaceholderSupabase = !import.meta.env.VITE_SUPABASE_URL ||
 export const isUsingMockMode = () => isMockForced || isPlaceholderSupabase;
 
 /**
- * Submit an anonymous safety signal
+ * Submit an anonymous safety signal (with offline queue & auto-sync support)
  */
 export const submitSignal = async (signalData, approxLat, approxLng) => {
+  const normalizedCategory = normalizeCategory(signalData?.category);
+  const sanitizedSignal = {
+    ...signalData,
+    category: normalizedCategory
+  };
+
   if (isUsingMockMode()) {
-    return mockApi.submitSignal(signalData, approxLat, approxLng);
+    const mockRes = await mockApi.submitSignal(sanitizedSignal, approxLat, approxLng);
+    return { success: true, queued: false, data: mockRes };
+  }
+
+  // If offline, immediately enqueue to local vault
+  if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+    const queuedItem = enqueueSignal(sanitizedSignal, approxLat, approxLng);
+    return { 
+      success: true, 
+      queued: true, 
+      item: queuedItem, 
+      message: 'Signal safely saved offline. Will auto-sync when online.' 
+    };
   }
 
   try {
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('safety_signals')
-      .insert([signalData]);
+      .insert([sanitizedSignal])
+      .select();
 
     if (error) throw error;
     
     // Client-side pattern evaluation fallback for MVP
-    if (signalData?.grid_zone) {
-      evaluateGridZone(signalData.grid_zone, approxLat, approxLng).catch(console.error);
+    if (sanitizedSignal?.grid_zone) {
+      evaluateGridZone(sanitizedSignal.grid_zone, approxLat, approxLng).catch(console.error);
     }
 
-    return true;
+    return { success: true, queued: false, data };
   } catch (err) {
-    console.warn("Supabase submitSignal failed, falling back to mock storage:", err.message);
-    return mockApi.submitSignal(signalData, approxLat, approxLng);
+    console.warn("Supabase submitSignal failed, enqueuing to offline sync vault:", err.message);
+    const queuedItem = enqueueSignal(sanitizedSignal, approxLat, approxLng);
+    return { 
+      success: true, 
+      queued: true, 
+      item: queuedItem, 
+      message: 'Network transmission failed. Saved offline and will auto-sync.' 
+    };
   }
 };
 
