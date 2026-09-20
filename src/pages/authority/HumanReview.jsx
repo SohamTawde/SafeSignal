@@ -77,6 +77,7 @@ const HumanReview = () => {
                   <div className="flex items-center gap-1"><ShieldAlert size={12} className={p.trust_score > 80 ? 'text-red-400' : 'text-orange-400'}/> {p.trust_score}% Trust</div>
                   <div className="flex items-center gap-1"><Activity size={12} className="text-violet-400"/> {p.report_count} Signals</div>
                   <div className="flex items-center gap-1"><Clock size={12} className="text-blue-400"/> {formatStatus(p.status)}</div>
+                  <div className="flex items-center gap-1"><Clock size={12} className="text-slate-500"/> {p.created_at ? new Date(p.created_at).toLocaleString() : 'N/A'}</div>
                 </div>
               </div>
               
@@ -129,9 +130,12 @@ const HumanReview = () => {
                    </span>
                  </div>
                  
-                 <p className={`text-lg font-black uppercase tracking-tighter mb-4 ${selectedPattern.trust_score >= 70 ? 'text-emerald-400' : 'text-orange-400'}`}>
+                 <p className={`text-lg font-black uppercase tracking-tighter mb-2 ${selectedPattern.trust_score >= 70 ? 'text-emerald-400' : 'text-orange-400'}`}>
                    {getConfidenceLevel(selectedPattern.trust_score)}
                  </p>
+                 <div className="flex items-center gap-2 mb-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                   <Clock size={12} /> Generated: {selectedPattern.created_at ? new Date(selectedPattern.created_at).toLocaleString() : 'N/A'}
+                 </div>
 
                  {/* Detailed Breakdown */}
                  <div className="space-y-4 mb-6">
@@ -168,7 +172,7 @@ const HumanReview = () => {
                    
                    {showExplanation && (
                      <div className="p-4 pt-0 text-[10px] text-slate-400 space-y-2 border-t border-white/5 mt-2 pt-3">
-                       <p className="mb-2 text-white font-bold">SafeSignal Trust Score estimates how reliable an emerging pattern is based on diverse data factors. It does not determine whether a crime occurred.</p>
+                       <p className="mb-2 text-white font-bold">Nirbhaya Trust Score estimates how reliable an emerging pattern is based on diverse data factors. It does not determine whether a crime occurred.</p>
                        <ul className="list-disc pl-4 space-y-1">
                          {selectedPattern.reporter_diversity > 70 
                            ? <li className="text-emerald-400">✓ Reports came from highly diverse anonymous sources</li>

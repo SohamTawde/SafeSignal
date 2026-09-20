@@ -1,6 +1,6 @@
-# Supabase Setup for SafeSignal
+# Supabase Setup for Nirbhaya
 
-This guide explains how to set up the backend for the SafeSignal platform using Supabase.
+This guide explains how to set up the backend for the Nirbhaya platform using Supabase.
 
 ## 1. Create a Supabase Project
 1. Go to [database.new](https://database.new/) or log into [Supabase](https://supabase.com/).
@@ -34,7 +34,7 @@ This guide explains how to set up the backend for the SafeSignal platform using 
 1. Go to **Authentication** -> **Providers** in the Supabase dashboard.
 2. Ensure the **Email** provider is enabled (it should be by default).
 3. Go to **Authentication** -> **Users** and click **Add user** -> **Create new user**.
-4. Enter an email (e.g., `admin@safesignal.org`) and a secure password.
+4. Enter an email (e.g., `admin@nirbhaya.org`) and a secure password.
 5. *Wait for the user to be created.*
 6. To grant Authority dashboard access, go to the **Table Editor**, open the `profiles` table.
 7. Find the newly created user row (it is created automatically via triggers).

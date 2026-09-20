@@ -12,7 +12,7 @@ export class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error("SafeSignal ErrorBoundary caught an error:", error, errorInfo);
+    console.error("Nirbhaya ErrorBoundary caught an error:", error, errorInfo);
   }
 
   handleReset = () => {
@@ -33,7 +33,7 @@ export class ErrorBoundary extends React.Component {
               Something went wrong
             </h2>
             <p className="text-slate-400 text-sm mb-6 leading-relaxed">
-              SafeSignal encountered an unexpected view error. Your session and safety data are safe.
+              Nirbhaya encountered an unexpected view error. Your session and safety data are safe.
             </p>
 
             {this.state.error?.message && (

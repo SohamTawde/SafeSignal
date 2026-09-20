@@ -100,7 +100,30 @@ let mockPatterns = [
 
 let mockReviews = [];
 
+const loadFromStorage = () => {
+  try {
+    const s = localStorage.getItem('nirbhaya_mock_signals');
+    if (s) { const parsed = JSON.parse(s); if (parsed.length > 0) mockSignals = parsed; }
+    const p = localStorage.getItem('nirbhaya_mock_patterns');
+    if (p) { const parsed = JSON.parse(p); if (parsed.length > 0) mockPatterns = parsed; }
+    const z = localStorage.getItem('nirbhaya_mock_zones');
+    if (z) { const parsed = JSON.parse(z); if (parsed.length > 0) mockZones = parsed; }
+  } catch (e) {}
+};
+
+const saveToStorage = () => {
+  try {
+    localStorage.setItem('nirbhaya_mock_signals', JSON.stringify(mockSignals));
+    localStorage.setItem('nirbhaya_mock_patterns', JSON.stringify(mockPatterns));
+    localStorage.setItem('nirbhaya_mock_zones', JSON.stringify(mockZones));
+  } catch (e) {}
+};
+
+// Initial load on script execution
+loadFromStorage();
+
 export const submitSignal = async (signalData, approxLat = 40.7128, approxLng = -74.0060) => {
+  loadFromStorage();
   const newSignal = {
     id: `sig-${Date.now()}`,
     ...signalData,
@@ -177,18 +200,22 @@ export const submitSignal = async (signalData, approxLat = 40.7128, approxLng = 
     });
   }
 
+  saveToStorage();
   return newSignal;
 };
 
 export const getPatterns = async () => {
+  loadFromStorage();
   return [...mockPatterns];
 };
 
 export const getSignals = async () => {
+  loadFromStorage();
   return [...mockSignals];
 };
 
 export const reviewPattern = async (patternId, newStatus, notes, authorityId) => {
+  loadFromStorage();
   const patternIndex = mockPatterns.findIndex(p => p.id === patternId);
   if (patternIndex !== -1) {
     mockPatterns[patternIndex] = {
@@ -203,16 +230,19 @@ export const reviewPattern = async (patternId, newStatus, notes, authorityId) =>
       notes: notes || 'Reviewed via mock',
       created_at: new Date().toISOString()
     });
+    saveToStorage();
     return mockPatterns[patternIndex];
   }
   throw new Error("Pattern not found");
 };
 
 export const getSafetyZones = async () => {
+  loadFromStorage();
   return [...mockZones];
 };
 
 export const getDashboardStats = async () => {
+  loadFromStorage();
   const emerging = mockPatterns.filter(p => p.status === 'emerging').length;
   const underReview = mockPatterns.filter(p => p.status === 'under_review').length;
   const highTrust = mockPatterns.filter(p => p.trust_score >= 80).length;

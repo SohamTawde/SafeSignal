@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { calculateTrustScoreEngine } from '../services/trustScore';
 
-describe('SafeSignal Trust Score Engine', () => {
+describe('Nirbhaya Trust Score Engine', () => {
   const now = Date.now();
 
   it('Test 1: High diversity (9 unique reporters, multiple days, multiple categories) -> high score', () => {

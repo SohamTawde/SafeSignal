@@ -5,7 +5,7 @@ import { Button } from '../components/Button';
 import { GlassCard } from '../components/GlassCard';
 import { ScrollProgressBar, ScrollRoll, SlowWordReveal, SlowTextReveal } from '../components/ScrollReveal';
 
-const SafeSignalLanding = () => {
+const NirbhayaLanding = () => {
   const navigate = useNavigate();
   const [downloadNotice, setDownloadNotice] = useState(false);
 
@@ -31,22 +31,20 @@ const SafeSignalLanding = () => {
       {downloadNotice && (
         <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-2xl bg-violet-950/95 border border-violet-500/50 backdrop-blur-2xl shadow-[0_10px_35px_rgba(139,92,246,0.3)] flex items-center gap-3 text-white text-xs font-semibold animate-in fade-in slide-in-from-top-4">
           <Download size={16} className="text-violet-400 animate-bounce" />
-          <span>Downloading <strong>safesignal.apk</strong> (54 MB)... Tap to install when completed.</span>
+          <span>Downloading <strong>nirbhaya.apk</strong> (54 MB)... Tap to install when completed.</span>
         </div>
       )}
 
       {/* Fixed Glass Navbar */}
       <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-4 flex justify-between items-center bg-[#0b0710]/75 backdrop-blur-2xl border-b border-white/5 transition-all duration-300">
-        <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-          <div className="w-8 h-8 rounded-lg bg-violet-600 flex items-center justify-center shadow-[0_0_15px_rgba(139,92,246,0.5)]">
-            <ShieldAlert size={18} className="text-white" />
-          </div>
-          <span className="text-xl font-bold tracking-tighter text-white uppercase">SafeSignal</span>
+        <div className="flex items-center gap-3 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+          <img src="/logo.png" alt="Nirbhaya Logo" className="h-10 w-auto object-contain drop-shadow-[0_0_10px_rgba(139,92,246,0.5)]" />
+          <span className="text-xl font-bold tracking-tighter text-white uppercase">Nirbhaya</span>
         </div>
         <div className="flex items-center gap-6">
           <a
-            href="/safesignal.apk"
-            download="safesignal.apk"
+            href="/nirbhaya.apk"
+            download="nirbhaya.apk"
             onClick={handleDownloadApk}
             className="text-xs font-bold text-violet-400 hover:text-violet-300 uppercase tracking-widest transition-colors flex items-center gap-1.5 cursor-pointer hover:scale-105 transform duration-200"
           >
@@ -94,8 +92,8 @@ const SafeSignalLanding = () => {
               <Activity size={20} className="mr-2" /> Report a Safety Signal
             </Button>
             <a
-              href="/safesignal.apk"
-              download="safesignal.apk"
+              href="/nirbhaya.apk"
+              download="nirbhaya.apk"
               onClick={handleDownloadApk}
               className="w-full sm:w-auto inline-flex items-center justify-center font-bold px-7 py-3.5 rounded-xl border border-violet-500/40 text-violet-300 hover:bg-violet-600/15 hover:text-white transition-all shadow-lg hover:shadow-violet-500/25 cursor-pointer active:scale-95"
             >
@@ -135,8 +133,8 @@ const SafeSignalLanding = () => {
           <div className="text-center mb-16">
             <SlowWordReveal
               as="h2"
-              text="How SafeSignal Works"
-              highlightWord="SafeSignal"
+              text="How Nirbhaya Works"
+              highlightWord="Nirbhaya"
               className="text-3xl sm:text-4xl md:text-5xl font-bold uppercase tracking-tight mb-4 text-center justify-center w-full text-white"
               staggerMs={70}
             />
@@ -276,8 +274,8 @@ const SafeSignalLanding = () => {
                   <Activity size={18} className="mr-2" /> Report an Incident
                 </Button>
                 <a
-                  href="/safesignal.apk"
-                  download="safesignal.apk"
+                  href="/nirbhaya.apk"
+                  download="nirbhaya.apk"
                   onClick={handleDownloadApk}
                   className="w-full sm:w-auto inline-flex items-center justify-center font-bold px-7 py-3.5 rounded-xl border border-white/20 bg-white/10 hover:bg-white/20 text-white transition-all shadow-lg cursor-pointer"
                 >
@@ -294,7 +292,7 @@ const SafeSignalLanding = () => {
         <ScrollRoll delay={100} direction="up">
           <div className="flex items-center justify-center gap-2 mb-3">
             <ShieldAlert size={18} className="text-violet-500" />
-            <span className="text-sm font-bold tracking-widest text-white uppercase">SafeSignal</span>
+            <span className="text-sm font-bold tracking-widest text-white uppercase">Nirbhaya</span>
           </div>
           <p className="text-[11px] text-slate-500 uppercase tracking-widest font-semibold">
             Proactive early-warning safety platform • Built for citizen privacy
@@ -305,5 +303,5 @@ const SafeSignalLanding = () => {
   );
 };
 
-export default SafeSignalLanding;
+export default NirbhayaLanding;
 

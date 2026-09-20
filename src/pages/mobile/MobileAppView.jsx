@@ -137,7 +137,7 @@ export const MobileAppView = () => {
                 <span className="text-sm font-bold">Privacy Guarantee</span>
               </div>
               <p className="text-xs text-slate-400 leading-relaxed">
-                SafeSignal never collects phone numbers, device IDs, or exact GPS coordinates. All signal data is obfuscated to safe anonymized zones.
+                Nirbhaya never collects phone numbers, device IDs, or exact GPS coordinates. All signal data is obfuscated to safe anonymized zones.
               </p>
             </div>
 
@@ -159,7 +159,7 @@ export const MobileAppView = () => {
             </div>
 
             <div className="pt-4 text-center">
-              <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">SafeSignal Mobile Edition • v1.0.0</p>
+              <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Nirbhaya Mobile Edition • v1.0.0</p>
             </div>
           </div>
         )}

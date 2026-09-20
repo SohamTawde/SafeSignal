@@ -74,7 +74,7 @@ export const MobileEmergencyButton = () => {
               </a>
 
               <a
-                href="sms:911?body=EMERGENCY:%20I%20need%20immediate%20assistance.%20Current%20location:%20SafeSignal%20Zone%2014"
+                href="sms:911?body=EMERGENCY:%20I%20need%20immediate%20assistance.%20Current%20location:%20Nirbhaya%20Zone%2014"
                 className="w-full py-3 px-4 rounded-xl bg-white/10 hover:bg-white/15 text-white font-semibold flex items-center justify-center gap-2 border border-white/20 text-xs uppercase tracking-wider"
               >
                 Send Emergency SMS

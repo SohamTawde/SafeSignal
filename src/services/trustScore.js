@@ -1,7 +1,7 @@
 import { TRUST_SCORE_CONFIG } from '../config/trustScoreConfig';
 
 /**
- * SafeSignal Trust Score Engine
+ * Nirbhaya Trust Score Engine
  * TRUST THROUGH DIVERSITY, NOT RAW VOLUME.
  */
 

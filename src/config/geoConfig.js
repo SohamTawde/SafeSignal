@@ -1,5 +1,5 @@
 /**
- * SafeSignal Geographic & Grid Configuration
+ * Nirbhaya Geographic & Grid Configuration
  * Centralized coordinates, resolution metrics, and privacy grid conversions.
  */
 

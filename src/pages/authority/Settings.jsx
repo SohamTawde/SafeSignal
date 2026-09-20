@@ -16,7 +16,7 @@ const DEFAULT_SETTINGS = {
 
 const Settings = () => {
   const [settings, setSettings] = useState(() => {
-    const saved = localStorage.getItem('safesignal_authority_settings');
+    const saved = localStorage.getItem('nirbhaya_authority_settings');
     if (saved) {
       try { return JSON.parse(saved); } catch (e) {}
     }
@@ -26,14 +26,14 @@ const Settings = () => {
   const [savedSuccess, setSavedSuccess] = useState(false);
 
   const handleSave = () => {
-    localStorage.setItem('safesignal_authority_settings', JSON.stringify(settings));
+    localStorage.setItem('nirbhaya_authority_settings', JSON.stringify(settings));
     setSavedSuccess(true);
     setTimeout(() => setSavedSuccess(false), 3000);
   };
 
   const handleReset = () => {
     setSettings(DEFAULT_SETTINGS);
-    localStorage.removeItem('safesignal_authority_settings');
+    localStorage.removeItem('nirbhaya_authority_settings');
     setSavedSuccess(true);
     setTimeout(() => setSavedSuccess(false), 3000);
   };

@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import * as mockApi from '../services/mockApi';
 import { calculateGridZone, calculateGridBounds, GRID_RESOLUTION } from '../config/geoConfig';
 
-describe('SafeSignal Geographic Grid Converter', () => {
+describe('Nirbhaya Geographic Grid Converter', () => {
   it('converts exact coordinates to 20m grid format', () => {
     const { gridZone, approxLat, approxLng, bounds } = calculateGridZone(40.7128, -74.0060);
     expect(gridZone).toMatch(/^ZONE-[AB]-\d{3}$/);
@@ -25,7 +25,7 @@ describe('SafeSignal Geographic Grid Converter', () => {
   });
 });
 
-describe('SafeSignal Mock API & Pattern Aggregation', () => {
+describe('Nirbhaya Mock API & Pattern Aggregation', () => {
   it('fetches safety zones with coordinates and activity levels', async () => {
     const zones = await mockApi.getSafetyZones();
     expect(zones.length).toBeGreaterThan(0);

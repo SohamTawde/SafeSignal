@@ -1,6 +1,6 @@
-# SafeSignal 🛡️
+# Nirbhaya 🛡️
 
-**SafeSignal** is an anonymous, proactive women-safety early-warning platform. 
+**Nirbhaya** is an anonymous, proactive women-safety early-warning platform. 
 It replaces traditional reactive reporting (calling the police *after* an incident) with a frictionless, privacy-first system that detects emerging threats in real-time.
 
 ---
@@ -8,7 +8,7 @@ It replaces traditional reactive reporting (calling the police *after* an incide
 ## 🚀 The Problem & Our Solution
 Most safety apps require users to create accounts, log in, verify OTPs, and provide exact GPS tracking. This creates **friction** and **privacy concerns** (fear of backlash), which deters women from reporting early warning signs like catcalling, stalking, or suspicious behavior.
 
-**SafeSignal solves this by:**
+**Nirbhaya solves this by:**
 1. **Zero-Friction Reporting:** No app installation or account required for citizens. 2 taps to report.
 2. **100% Anonymity:** We do not collect names, emails, phone numbers, or exact GPS coordinates.
 3. **AI Pattern Engine:** Individual anonymous reports are mathematically aggregated using our custom "Trust Score Engine" to form high-confidence "Emerging Patterns" for authorities.
@@ -41,7 +41,7 @@ Most safety apps require users to create accounts, log in, verify OTPs, and prov
 
 ## 📂 Project Structure
 ```
-SafeSignal/
+Nirbhaya/
 ├── src/
 │   ├── components/      # Reusable UI components (Buttons, GlassCards, Map)
 │   ├── contexts/        # React Contexts (AuthContext)
@@ -57,7 +57,7 @@ SafeSignal/
 ---
 
 ## ⚙️ How the Trust Score Engine Works
-To prevent spam (e.g., one person clicking "Report" 100 times), SafeSignal uses a deterministic math engine:
+To prevent spam (e.g., one person clicking "Report" 100 times), Nirbhaya uses a deterministic math engine:
 - **Reporter Diversity (35%):** Uses an anonymous local hash. More unique devices = Higher Trust.
 - **Time Spread (30%):** Reports spread over hours/days are trusted more than 10 reports in 10 seconds.
 - **Category Diversity (20%):** Multiple types of incidents in one area increase confidence.

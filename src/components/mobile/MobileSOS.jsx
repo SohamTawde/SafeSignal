@@ -91,7 +91,7 @@ export const MobileSOS = ({ initialZone = 'Zone 14' }) => {
   }, []);
 
   const emergencySmsBody = encodeURIComponent(
-    `EMERGENCY ALERT: I am in danger. My SafeSignal safety zone is: ${initialZone}. Please send immediate assistance.`
+    `EMERGENCY ALERT: I am in danger. My Nirbhaya safety zone is: ${initialZone}. Please send immediate assistance.`
   );
   const emergencySmsHref = `sms:911?body=${emergencySmsBody}`;
 

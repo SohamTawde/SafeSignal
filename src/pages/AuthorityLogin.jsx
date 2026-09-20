@@ -165,7 +165,7 @@ const AuthorityLogin = () => {
             <form onSubmit={handleResetPassword} className="space-y-4">
               <input 
                 type="email" 
-                placeholder="officer@safesignal.org" 
+                placeholder="officer@nirbhaya.org" 
                 className="w-full bg-[#150f24] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-violet-500"
                 value={resetEmail}
                 onChange={(e) => setResetEmail(e.target.value)}

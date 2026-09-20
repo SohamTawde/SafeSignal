@@ -14,8 +14,8 @@ export const MobilePage = () => {
     // When visited on website (not native app), automatically trigger APK download
     if (!isNative) {
       const link = document.createElement('a');
-      link.href = '/safesignal.apk';
-      link.setAttribute('download', 'safesignal.apk');
+      link.href = '/nirbhaya.apk';
+      link.setAttribute('download', 'nirbhaya.apk');
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -46,11 +46,11 @@ export const MobilePage = () => {
         </div>
 
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/30 text-violet-300 text-[11px] font-bold uppercase tracking-wider mb-3">
-          <CheckCircle2 size={13} className="text-violet-400" /> Downloading SafeSignal APK
+          <CheckCircle2 size={13} className="text-violet-400" /> Downloading Nirbhaya APK
         </div>
 
         <h1 className="text-2xl font-bold tracking-tight text-white mb-2">
-          Installing SafeSignal Android App
+          Installing Nirbhaya Android App
         </h1>
         <p className="text-sm text-slate-400 mb-6 leading-relaxed">
           Your direct APK download should begin automatically in your browser.
@@ -58,11 +58,11 @@ export const MobilePage = () => {
 
         {/* Manual Download Button */}
         <a
-          href="/safesignal.apk"
-          download="safesignal.apk"
+          href="/nirbhaya.apk"
+          download="nirbhaya.apk"
           className="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-violet-600/30 transition-all mb-5 active:scale-[0.98]"
         >
-          <Download size={18} /> Download SafeSignal APK (54 MB)
+          <Download size={18} /> Download Nirbhaya APK (54 MB)
         </a>
 
         {/* 3 Step Installation Guide */}
@@ -72,7 +72,7 @@ export const MobilePage = () => {
           </div>
           <div className="flex items-start gap-2.5 text-xs text-slate-300">
             <span className="w-5 h-5 rounded-full bg-violet-500/20 text-violet-300 font-bold flex items-center justify-center shrink-0 text-[10px]">1</span>
-            <span>Tap <strong>Open</strong> or find <strong>safesignal.apk</strong> in your Downloads.</span>
+            <span>Tap <strong>Open</strong> or find <strong>nirbhaya.apk</strong> in your Downloads.</span>
           </div>
           <div className="flex items-start gap-2.5 text-xs text-slate-300">
             <span className="w-5 h-5 rounded-full bg-violet-500/20 text-violet-300 font-bold flex items-center justify-center shrink-0 text-[10px]">2</span>
@@ -80,7 +80,7 @@ export const MobilePage = () => {
           </div>
           <div className="flex items-start gap-2.5 text-xs text-slate-300">
             <span className="w-5 h-5 rounded-full bg-violet-500/20 text-violet-300 font-bold flex items-center justify-center shrink-0 text-[10px]">3</span>
-            <span>Tap <strong>Install</strong> to launch the native SafeSignal mobile application.</span>
+            <span>Tap <strong>Install</strong> to launch the native Nirbhaya mobile application.</span>
           </div>
         </div>
 
@@ -89,7 +89,7 @@ export const MobilePage = () => {
           onClick={() => navigate('/')}
           className="text-xs text-slate-400 hover:text-white flex items-center gap-1.5 transition font-medium"
         >
-          <ArrowLeft size={14} /> Return to SafeSignal Web
+          <ArrowLeft size={14} /> Return to Nirbhaya Web
         </button>
       </div>
     </div>

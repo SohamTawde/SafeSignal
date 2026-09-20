@@ -46,7 +46,7 @@ const AuthorityDashboard = () => {
               <ShieldAlert size={18} className="text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-black tracking-tighter text-white uppercase">SafeSignal</h1>
+              <h1 className="text-lg font-black tracking-tighter text-white uppercase">Nirbhaya</h1>
               <p className="text-[9px] text-violet-400 font-bold uppercase tracking-widest">Authority Portal</p>
             </div>
           </div>

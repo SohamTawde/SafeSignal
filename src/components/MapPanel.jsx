@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { MapContainer, TileLayer, CircleMarker, Rectangle, Tooltip, useMap } from 'react-leaflet';
+import React, { useEffect, useState } from 'react';
+import { MapContainer, TileLayer, CircleMarker, Rectangle, Tooltip, useMap, Circle } from 'react-leaflet';
 import { DEFAULT_PILOT_LOCATION, calculateGridBounds } from '../config/geoConfig';
 
 // Fix leaflet default icon issue in React
@@ -28,9 +28,67 @@ const MapUpdater = ({ center, zoom }) => {
 };
 
 export const MapPanel = ({ zones = [], onZoneClick, center = null, zoom = 15, isDark = true }) => {
-  // Center on the first zone if available, otherwise default pilot coordinates
-  const mapCenter = center || (zones.length > 0 && zones[0].center ? zones[0].center : DEFAULT_CENTER);
-  const mapZoom = (zones.length > 0) ? 15 : zoom;
+  const [userLocation, setUserLocation] = useState(null);
+
+  useEffect(() => {
+    let watchId;
+    if ("geolocation" in navigator) {
+      watchId = navigator.geolocation.watchPosition(
+        (position) => {
+          setUserLocation({
+            lat: position.coords.latitude, 
+            lng: position.coords.longitude,
+            accuracy: position.coords.accuracy || 100 // fallback accuracy
+          });
+        },
+        (error) => {
+          console.error("Error getting live location:", error);
+        },
+        { enableHighAccuracy: true, maximumAge: 10000, timeout: 5000 }
+      );
+    }
+    return () => {
+      if (watchId) navigator.geolocation.clearWatch(watchId);
+    };
+  }, []);
+
+  // Center on userLocation if available, else first zone, else default
+  const mapCenter = center || (userLocation ? [userLocation.lat, userLocation.lng] : null) || (zones.length > 0 && zones[0].center ? zones[0].center : DEFAULT_CENTER);
+  const mapZoom = (zones.length > 0 && !userLocation) ? 15 : zoom;
+
+  // Calculate distance in meters (Haversine formula)
+  const getDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371e3;
+    const p1 = lat1 * Math.PI/180;
+    const p2 = lat2 * Math.PI/180;
+    const dp = (lat2-lat1) * Math.PI/180;
+    const dl = (lon2-lon1) * Math.PI/180;
+    const a = Math.sin(dp/2) * Math.sin(dp/2) + Math.cos(p1) * Math.cos(p2) * Math.sin(dl/2) * Math.sin(dl/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+  };
+
+  // Determine user color based on proximity to zones (within 2000 meters)
+  const getUserStatusColor = () => {
+    // Default is Yellow (Safe/Caution)
+    if (!userLocation || !zones || zones.length === 0) return '#eab308'; 
+    
+    let closestZoneColor = '#eab308'; // Default Yellow
+    let minDistance = Infinity;
+
+    for (const zone of zones) {
+      if (!zone.center) continue;
+      const dist = getDistance(userLocation.lat, userLocation.lng, zone.center[0], zone.center[1]);
+      if (dist < 2000 && dist < minDistance) {
+        minDistance = dist;
+        // Turn red/orange depending on zone color if within range
+        closestZoneColor = zone.color || '#ef4444'; 
+      }
+    }
+    return closestZoneColor;
+  };
+
+  const userColor = getUserStatusColor();
 
   return (
     <MapContainer center={mapCenter} zoom={mapZoom} style={{ height: '100%', width: '100%', zIndex: 1 }}>
@@ -90,6 +148,38 @@ export const MapPanel = ({ zones = [], onZoneClick, center = null, zoom = 15, is
           </React.Fragment>
         );
       })}
+
+      {userLocation && (
+        <React.Fragment>
+          {/* Accuracy/Coverage Area */}
+          <Circle
+            center={[userLocation.lat, userLocation.lng]}
+            radius={userLocation.accuracy < 30 ? 50 : userLocation.accuracy} // Ensure at least a decent area is shown
+            pathOptions={{
+              color: userColor,
+              fillColor: userColor,
+              fillOpacity: 0.15,
+              weight: 1,
+              dashArray: '4, 4'
+            }}
+          />
+          {/* Main User Marker */}
+          <CircleMarker
+            center={[userLocation.lat, userLocation.lng]}
+            radius={7}
+            pathOptions={{
+              color: '#ffffff', // White border for premium look
+              fillColor: userColor, // Solid core matching status
+              fillOpacity: 1,
+              weight: 2
+            }}
+          >
+            <Tooltip direction="top" opacity={0.9}>
+              <div className="text-xs font-bold font-sans">You are here</div>
+            </Tooltip>
+          </CircleMarker>
+        </React.Fragment>
+      )}
     </MapContainer>
   );
 };

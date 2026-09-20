@@ -49,7 +49,7 @@ const EmergencySOS = () => {
 
   // Pre-fill emergency SMS link for native phone messaging
   const emergencySmsBody = encodeURIComponent(
-    `EMERGENCY ALERT: I am in immediate danger and need urgent assistance. My approximate SafeSignal grid zone is: ${currentZone}. Time: ${new Date().toLocaleTimeString()}. Please send help or contact authorities.`
+    `EMERGENCY ALERT: I am in immediate danger and need urgent assistance. My approximate Nirbhaya grid zone is: ${currentZone}. Time: ${new Date().toLocaleTimeString()}. Please send help or contact authorities.`
   );
   const emergencySmsHref = `sms:?body=${emergencySmsBody}`;
 

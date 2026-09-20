@@ -11,22 +11,22 @@ export const AuthProvider = ({ children }) => {
   const signInAsDemoAuthority = () => {
     const demoUser = {
       id: 'demo-officer-001',
-      email: 'officer.demo@safesignal.org'
+      email: 'officer.demo@nirbhaya.org'
     };
     const demoProfile = {
       id: 'demo-officer-001',
-      email: 'officer.demo@safesignal.org',
+      email: 'officer.demo@nirbhaya.org',
       full_name: 'Officer J. Miller',
       role: 'authority'
     };
     setUser(demoUser);
     setProfile(demoProfile);
-    localStorage.setItem('safesignal_demo_session', 'true');
+    localStorage.setItem('nirbhaya_demo_session', 'true');
   };
 
   useEffect(() => {
     // Check if demo authority session is active
-    if (localStorage.getItem('safesignal_demo_session') === 'true') {
+    if (localStorage.getItem('nirbhaya_demo_session') === 'true') {
       signInAsDemoAuthority();
       setLoading(false);
       return;
@@ -93,12 +93,12 @@ export const AuthProvider = ({ children }) => {
   };
 
   const signIn = (email, password) => {
-    localStorage.removeItem('safesignal_demo_session');
+    localStorage.removeItem('nirbhaya_demo_session');
     return supabase.auth.signInWithPassword({ email, password });
   };
 
   const signOut = () => {
-    localStorage.removeItem('safesignal_demo_session');
+    localStorage.removeItem('nirbhaya_demo_session');
     setUser(null);
     setProfile(null);
     return supabase.auth.signOut();

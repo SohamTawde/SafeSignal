@@ -29,7 +29,7 @@ const PrivacyPolicy = () => {
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-blue-400">Zero Compromise.</span>
           </h1>
           <p className="text-lg text-slate-400 leading-relaxed max-w-2xl">
-            SafeSignal is built on the principle that citizen safety should not come at the cost of privacy. We do not want your personal data. We only want to detect emerging safety patterns.
+            Nirbhaya is built on the principle that citizen safety should not come at the cost of privacy. We do not want your personal data. We only want to detect emerging safety patterns.
           </p>
         </div>
 
@@ -70,7 +70,7 @@ const PrivacyPolicy = () => {
         <div className="bg-[#150f24] border border-white/10 rounded-2xl p-8 mb-12">
           <h2 className="text-2xl font-bold uppercase tracking-tight text-white mb-4">Anti-Abuse Mechanism</h2>
           <p className="text-slate-400 leading-relaxed mb-6">
-            To prevent spam without compromising anonymity, SafeSignal uses a rotating, localized device identifier. This allows us to calculate "Reporter Diversity" for a pattern—ensuring that a spike in reports isn't just one person clicking a button repeatedly. This identifier cannot be traced back to your device globally or used for tracking.
+            To prevent spam without compromising anonymity, Nirbhaya uses a rotating, localized device identifier. This allows us to calculate "Reporter Diversity" for a pattern—ensuring that a spike in reports isn't just one person clicking a button repeatedly. This identifier cannot be traced back to your device globally or used for tracking.
           </p>
         </div>
 

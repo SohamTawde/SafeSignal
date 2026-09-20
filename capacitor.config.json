@@ -1,6 +1,6 @@
 {
-  "appId": "org.safesignal.app",
-  "appName": "SafeSignal",
+  "appId": "org.nirbhaya.app",
+  "appName": "Nirbhaya",
   "webDir": "dist",
   "server": {
     "androidScheme": "https"

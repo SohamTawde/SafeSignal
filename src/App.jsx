@@ -7,7 +7,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import { ErrorBoundary } from './components/ErrorBoundary';
 
 // Eager Landing Page for instant loading
-import SafeSignalLanding from './pages/SafeSignalLanding';
+import NirbhayaLanding from './pages/NirbhayaLanding';
 
 // Lazy Loaded Routes for performance & adblocker isolation
 const AnonymousReport = lazy(() => import('./pages/AnonymousReport'));
@@ -35,7 +35,7 @@ const RouteFallback = () => (
   <div className="min-h-screen bg-[#0b0710] text-white flex items-center justify-center font-sans">
     <div className="flex flex-col items-center gap-3">
       <div className="w-8 h-8 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
-      <p className="text-xs text-slate-400 uppercase tracking-widest font-semibold">Loading SafeSignal...</p>
+      <p className="text-xs text-slate-400 uppercase tracking-widest font-semibold">Loading Nirbhaya...</p>
     </div>
   </div>
 );
@@ -50,7 +50,7 @@ function App() {
           <Suspense fallback={<RouteFallback />}>
             <Routes>
               {/* --- Public Citizen Routes --- */}
-              <Route path="/" element={isNative ? <MobilePage /> : <SafeSignalLanding />} />
+              <Route path="/" element={isNative ? <MobilePage /> : <NirbhayaLanding />} />
               <Route path="/report" element={<AnonymousReport />} />
               <Route path="/sos" element={<EmergencySOS />} />
               <Route path="/map" element={<SafetyMap />} />

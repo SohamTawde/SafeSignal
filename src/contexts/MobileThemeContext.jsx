@@ -4,11 +4,11 @@ const MobileThemeContext = createContext({});
 
 export const MobileThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('safesignal_mobile_theme') || 'dark';
+    return localStorage.getItem('nirbhaya_mobile_theme') || 'dark';
   });
 
   useEffect(() => {
-    localStorage.setItem('safesignal_mobile_theme', theme);
+    localStorage.setItem('nirbhaya_mobile_theme', theme);
   }, [theme]);
 
   const toggleTheme = () => {
