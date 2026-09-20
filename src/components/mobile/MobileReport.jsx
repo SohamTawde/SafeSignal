@@ -4,7 +4,7 @@ import {
 } from 'lucide-react';
 import { useMobileTheme } from '../../contexts/MobileThemeContext';
 import { submitSignal } from '../../services/api';
-import { DEFAULT_PILOT_LOCATION } from '../../config/geoConfig';
+import { DEFAULT_PILOT_LOCATION, calculateGridZone } from '../../config/geoConfig';
 import { MapPanel } from '../MapPanel';
 
 // Custom SVG Icons matching mockup style
@@ -77,9 +77,12 @@ export const MobileReport = ({ onNavigateMap, initialZone = 'Zone 14' }) => {
   const { isDark } = useMobileTheme();
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedTimeframe, setSelectedTimeframe] = useState('just_now');
+  const [userLoc, setUserLoc] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+
+  const currentZone = userLoc ? calculateGridZone(userLoc.lat, userLoc.lng).gridZone : initialZone;
 
   const handleSubmit = async () => {
     if (!selectedCategory) {
@@ -93,9 +96,9 @@ export const MobileReport = ({ onNavigateMap, initialZone = 'Zone 14' }) => {
     try {
       await submitSignal({
         category: selectedCategory,
-        latitude: DEFAULT_PILOT_LOCATION.lat,
-        longitude: DEFAULT_PILOT_LOCATION.lng,
-        grid_zone: initialZone,
+        latitude: userLoc?.lat || DEFAULT_PILOT_LOCATION.lat,
+        longitude: userLoc?.lng || DEFAULT_PILOT_LOCATION.lng,
+        grid_zone: currentZone,
       });
 
       setSubmitted(true);
@@ -130,7 +133,7 @@ export const MobileReport = ({ onNavigateMap, initialZone = 'Zone 14' }) => {
           Signal Anonymously Transmitted
         </h3>
         <p className={`text-xs max-w-xs mb-6 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-          Your report has been hashed and obfuscated into <strong className={isDark ? 'text-violet-400' : 'text-violet-700'}>{initialZone}</strong>. Zero identifying data was collected.
+          Your report has been hashed and obfuscated into <strong className={isDark ? 'text-violet-400' : 'text-violet-700'}>{currentZone}</strong>. Zero identifying data was collected.
         </p>
 
         <div className="w-full max-w-xs space-y-2.5">
@@ -273,7 +276,7 @@ export const MobileReport = ({ onNavigateMap, initialZone = 'Zone 14' }) => {
             <MapPin size={14} className="text-violet-500 shrink-0" />
             <div>
               <span className={`text-[11px] font-bold block leading-none ${isDark ? 'text-white' : 'text-[#111827]'}`}>
-                Location Tracking Active
+                Location: {currentZone}
               </span>
               <span className={`text-[9px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                 Auto-snapped safety zone • Exact GPS discarded
@@ -289,7 +292,7 @@ export const MobileReport = ({ onNavigateMap, initialZone = 'Zone 14' }) => {
         
         {/* Live Mini Map */}
         <div className="w-full h-[120px] rounded-xl overflow-hidden relative border border-black/5 dark:border-white/5">
-           <MapPanel isDark={isDark} />
+           <MapPanel isDark={isDark} onLocationUpdate={(loc) => setUserLoc(loc)} />
         </div>
       </div>
 

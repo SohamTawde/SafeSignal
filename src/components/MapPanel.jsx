@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Rectangle, Tooltip, useMap, Circle } from 'react-leaflet';
 import { DEFAULT_PILOT_LOCATION, calculateGridBounds } from '../config/geoConfig';
+import { Capacitor } from '@capacitor/core';
 import { Geolocation } from '@capacitor/geolocation';
 // Fix leaflet default icon issue in React
 import L from 'leaflet';
@@ -20,6 +21,7 @@ const DEFAULT_CENTER = [DEFAULT_PILOT_LOCATION.lat, DEFAULT_PILOT_LOCATION.lng];
 const MapUpdater = ({ center, zoom }) => {
   const map = useMap();
   useEffect(() => {
+    map.invalidateSize();
     if (center && Array.isArray(center) && center[0] && center[1]) {
       map.setView(center, zoom, { animate: true });
     }
@@ -27,36 +29,57 @@ const MapUpdater = ({ center, zoom }) => {
   return null;
 };
 
-export const MapPanel = ({ zones = [], onZoneClick, center = null, zoom = 15, isDark = true }) => {
+export const MapPanel = ({ zones = [], onZoneClick, center = null, zoom = 15, isDark = true, onLocationUpdate = null }) => {
   const [userLocation, setUserLocation] = useState(null);
+  const [isLocating, setIsLocating] = useState(true);
 
   useEffect(() => {
     let watchId;
     let isMounted = true;
 
+    // Safety timeout: if location permissions are delayed or denied, don't keep spinner frozen
+    const timeoutId = setTimeout(() => {
+      if (isMounted) {
+        setIsLocating(false);
+      }
+    }, 3500);
+
     const startWatching = async () => {
       try {
-        // Request permissions for mobile (does nothing or browser prompt on web)
-        await Geolocation.requestPermissions();
+        // Request permissions only on native platforms (Capacitor throws 'Not implemented on web')
+        if (Capacitor.isNativePlatform()) {
+          try {
+            await Geolocation.requestPermissions();
+          } catch (permErr) {
+            console.warn("Native geolocation permission request warning:", permErr);
+          }
+        }
 
         watchId = await Geolocation.watchPosition(
-          { enableHighAccuracy: true, maximumAge: 10000, timeout: 5000 },
+          { enableHighAccuracy: true, maximumAge: 10000, timeout: 7000 },
           (position, err) => {
             if (err) {
-              console.error("Error watching position:", err);
+              console.warn("Geolocation watch error:", err);
+              if (isMounted) setIsLocating(false);
               return;
             }
             if (position && isMounted) {
-              setUserLocation({
+              const loc = {
                 lat: position.coords.latitude,
                 lng: position.coords.longitude,
                 accuracy: position.coords.accuracy || 100
-              });
+              };
+              setUserLocation(loc);
+              setIsLocating(false);
+              if (onLocationUpdate) {
+                onLocationUpdate(loc);
+              }
             }
           }
         );
       } catch (error) {
-        console.error("Error setting up geolocation:", error);
+        console.warn("Error setting up geolocation:", error);
+        if (isMounted) setIsLocating(false);
       }
     };
 
@@ -64,6 +87,7 @@ export const MapPanel = ({ zones = [], onZoneClick, center = null, zoom = 15, is
 
     return () => {
       isMounted = false;
+      clearTimeout(timeoutId);
       if (watchId) {
         Geolocation.clearWatch({ id: watchId });
       }
@@ -71,8 +95,8 @@ export const MapPanel = ({ zones = [], onZoneClick, center = null, zoom = 15, is
   }, []);
 
   // Determine if we should wait for user location
-  // If no explicit center is provided and no zones are provided, we should wait for userLocation
-  const shouldWaitForLocation = !center && (!zones || zones.length === 0) && !userLocation;
+  // If no explicit center is provided and no zones are provided, wait briefly for userLocation
+  const shouldWaitForLocation = isLocating && !center && (!zones || zones.length === 0) && !userLocation;
 
   if (shouldWaitForLocation) {
     return (
@@ -182,6 +206,17 @@ export const MapPanel = ({ zones = [], onZoneClick, center = null, zoom = 15, is
 
       {userLocation && (
         <React.Fragment>
+          {/* Snapped 20m Privacy Grid Square for User */}
+          <Rectangle
+            bounds={calculateGridBounds(userLocation.lat, userLocation.lng)}
+            pathOptions={{
+              color: userColor,
+              weight: 1.5,
+              fillColor: userColor,
+              fillOpacity: 0.15,
+              dashArray: '3, 3'
+            }}
+          />
           {/* Accuracy/Coverage Area */}
           <Circle
             center={[userLocation.lat, userLocation.lng]}

@@ -2,18 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useMobileTheme } from '../../contexts/MobileThemeContext';
 import { MobileStatusBar } from '../../components/mobile/MobileStatusBar';
 import { MobileHeader } from '../../components/mobile/MobileHeader';
-import { MobileQuickSignalGrid } from '../../components/mobile/MobileQuickSignalGrid';
-import { MobileSafetyRadar } from '../../components/mobile/MobileSafetyRadar';
-import { MobileEmergencyButton } from '../../components/mobile/MobileEmergencyButton';
 import { MobileBottomNavbar } from '../../components/mobile/MobileBottomNavbar';
 
 // Dedicated Mobile Views (Bright/Dark mode synchronized)
 import { MobileRadarMap } from '../../components/mobile/MobileRadarMap';
 import { MobileReport } from '../../components/mobile/MobileReport';
 import { MobileSOS } from '../../components/mobile/MobileSOS';
-import { ShieldAlert } from 'lucide-react';
-
-import { Moon, Sun, Shield, Lock, Phone, Info, Bell } from 'lucide-react';
+import { ShieldAlert, Moon, Sun, Shield, Lock, Phone, Info, Bell } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { App as CapApp } from '@capacitor/app';
