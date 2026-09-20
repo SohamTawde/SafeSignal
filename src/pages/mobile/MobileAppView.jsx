@@ -11,6 +11,7 @@ import { MobileBottomNavbar } from '../../components/mobile/MobileBottomNavbar';
 import { MobileRadarMap } from '../../components/mobile/MobileRadarMap';
 import { MobileReport } from '../../components/mobile/MobileReport';
 import { MobileSOS } from '../../components/mobile/MobileSOS';
+import { ShieldAlert } from 'lucide-react';
 
 import { Moon, Sun, Shield, Lock, Phone, Info, Bell } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
@@ -67,14 +68,22 @@ export const MobileAppView = () => {
       {/* Main Content Area */}
       <main ref={mainRef} className="flex-1 min-h-0 overflow-y-auto no-scrollbar flex flex-col justify-start">
         {activeTab === 'home' && (
-          <div className="flex-1 min-h-0 flex flex-col justify-between py-0.5 animate-in fade-in duration-150">
-            <div className="flex flex-col gap-1">
-              <MobileQuickSignalGrid />
-              <MobileSafetyRadar onOpenFullMap={() => setActiveTab('map')} />
-            </div>
-            <div className="shrink-0 pb-1 mt-auto">
-              <MobileEmergencyButton />
-            </div>
+          <div className="flex-1 w-full h-full flex flex-col items-center justify-center p-6 animate-in fade-in zoom-in-95 duration-200">
+            {/* Big floating report button centered */}
+            <button 
+              onClick={() => setActiveTab('report')}
+              className={`w-[240px] h-[240px] rounded-full font-black text-2xl shadow-2xl flex flex-col items-center justify-center gap-4 transition-all active:scale-[0.95] ${
+                isDark 
+                  ? 'bg-gradient-to-b from-red-500 to-red-700 text-white shadow-red-600/30 ring-8 ring-red-500/20' 
+                  : 'bg-gradient-to-b from-red-500 to-red-600 text-white shadow-red-500/40 ring-8 ring-red-500/20'
+              }`}
+            >
+              <ShieldAlert size={64} className="animate-pulse" />
+              <span>REPORT<br/>INCIDENT</span>
+            </button>
+            <p className={`mt-8 text-center text-sm font-medium px-4 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+              Tap to securely share your location and report an incident anonymously.
+            </p>
           </div>
         )}
 

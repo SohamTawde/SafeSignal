@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Rectangle, Tooltip, useMap, Circle } from 'react-leaflet';
 import { DEFAULT_PILOT_LOCATION, calculateGridBounds } from '../config/geoConfig';
-
+import { Geolocation } from '@capacitor/geolocation';
 // Fix leaflet default icon issue in React
 import L from 'leaflet';
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
@@ -32,29 +32,60 @@ export const MapPanel = ({ zones = [], onZoneClick, center = null, zoom = 15, is
 
   useEffect(() => {
     let watchId;
-    if ("geolocation" in navigator) {
-      watchId = navigator.geolocation.watchPosition(
-        (position) => {
-          setUserLocation({
-            lat: position.coords.latitude, 
-            lng: position.coords.longitude,
-            accuracy: position.coords.accuracy || 100 // fallback accuracy
-          });
-        },
-        (error) => {
-          console.error("Error getting live location:", error);
-        },
-        { enableHighAccuracy: true, maximumAge: 10000, timeout: 5000 }
-      );
-    }
+    let isMounted = true;
+
+    const startWatching = async () => {
+      try {
+        // Request permissions for mobile (does nothing or browser prompt on web)
+        await Geolocation.requestPermissions();
+
+        watchId = await Geolocation.watchPosition(
+          { enableHighAccuracy: true, maximumAge: 10000, timeout: 5000 },
+          (position, err) => {
+            if (err) {
+              console.error("Error watching position:", err);
+              return;
+            }
+            if (position && isMounted) {
+              setUserLocation({
+                lat: position.coords.latitude,
+                lng: position.coords.longitude,
+                accuracy: position.coords.accuracy || 100
+              });
+            }
+          }
+        );
+      } catch (error) {
+        console.error("Error setting up geolocation:", error);
+      }
+    };
+
+    startWatching();
+
     return () => {
-      if (watchId) navigator.geolocation.clearWatch(watchId);
+      isMounted = false;
+      if (watchId) {
+        Geolocation.clearWatch({ id: watchId });
+      }
     };
   }, []);
 
+  // Determine if we should wait for user location
+  // If no explicit center is provided and no zones are provided, we should wait for userLocation
+  const shouldWaitForLocation = !center && (!zones || zones.length === 0) && !userLocation;
+
+  if (shouldWaitForLocation) {
+    return (
+      <div className="w-full h-full flex flex-col items-center justify-center bg-[#0b0710] text-slate-400">
+        <div className="w-8 h-8 border-2 border-violet-500 border-t-transparent rounded-full animate-spin mb-3"></div>
+        <div className="text-xs font-bold uppercase tracking-widest">Locating you...</div>
+      </div>
+    );
+  }
+
   // Center on userLocation if available, else first zone, else default
-  const mapCenter = center || (userLocation ? [userLocation.lat, userLocation.lng] : null) || (zones.length > 0 && zones[0].center ? zones[0].center : DEFAULT_CENTER);
-  const mapZoom = (zones.length > 0 && !userLocation) ? 15 : zoom;
+  const mapCenter = center || (userLocation ? [userLocation.lat, userLocation.lng] : null) || (zones && zones.length > 0 && zones[0].center ? zones[0].center : DEFAULT_CENTER);
+  const mapZoom = (zones && zones.length > 0 && !userLocation) ? 15 : zoom;
 
   // Calculate distance in meters (Haversine formula)
   const getDistance = (lat1, lon1, lat2, lon2) => {

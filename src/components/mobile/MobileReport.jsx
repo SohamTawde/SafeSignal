@@ -5,6 +5,7 @@ import {
 import { useMobileTheme } from '../../contexts/MobileThemeContext';
 import { submitSignal } from '../../services/api';
 import { DEFAULT_PILOT_LOCATION } from '../../config/geoConfig';
+import { MapPanel } from '../MapPanel';
 
 // Custom SVG Icons matching mockup style
 const FollowingIcon = () => (
@@ -261,29 +262,35 @@ export const MobileReport = ({ onNavigateMap, initialZone = 'Zone 14' }) => {
         </div>
       </div>
 
-      {/* Snapped Zone Location Card */}
-      <div className={`p-2 rounded-[16px] border flex items-center justify-between mb-1.5 text-left ${
+      {/* Snapped Zone Location Card with Live Map */}
+      <div className={`p-2 rounded-[16px] border flex flex-col mb-1.5 text-left overflow-hidden ${
         isDark 
           ? 'bg-[#181128] border-white/10 shadow-sm' 
           : 'bg-white border-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.03)]'
       }`}>
-        <div className="flex items-center gap-2">
-          <MapPin size={14} className="text-violet-500 shrink-0" />
-          <div>
-            <span className={`text-[11px] font-bold block leading-none ${isDark ? 'text-white' : 'text-[#111827]'}`}>
-              Location: {initialZone}
-            </span>
-            <span className={`text-[9px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-              Auto-snapped safety zone • Exact GPS discarded
-            </span>
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <MapPin size={14} className="text-violet-500 shrink-0" />
+            <div>
+              <span className={`text-[11px] font-bold block leading-none ${isDark ? 'text-white' : 'text-[#111827]'}`}>
+                Location Tracking Active
+              </span>
+              <span className={`text-[9px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                Auto-snapped safety zone • Exact GPS discarded
+              </span>
+            </div>
           </div>
+          <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 ${
+            isDark ? 'bg-violet-500/15 text-violet-300' : 'bg-violet-100 text-violet-700'
+          }`}>
+            <ShieldCheck size={11} /> 100% PII Free
+          </span>
         </div>
-
-        <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 ${
-          isDark ? 'bg-violet-500/15 text-violet-300' : 'bg-violet-100 text-violet-700'
-        }`}>
-          <ShieldCheck size={11} /> 100% PII Free
-        </span>
+        
+        {/* Live Mini Map */}
+        <div className="w-full h-[120px] rounded-xl overflow-hidden relative border border-black/5 dark:border-white/5">
+           <MapPanel isDark={isDark} />
+        </div>
       </div>
 
       {/* Submit Button in Layered Capsule Pill style */}
